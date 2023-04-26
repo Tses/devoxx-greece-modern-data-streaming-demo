@@ -15,7 +15,7 @@ public class SensorApplication implements QuarkusApplication {
 
     @Inject SensorConfiguration sensors;
 
-    @Channel("temperatures")
+    @Channel("raw-temperatures")
     MutinyEmitter<JsonObject> emitter;
     @Override
     public int run(String... args) throws Exception {

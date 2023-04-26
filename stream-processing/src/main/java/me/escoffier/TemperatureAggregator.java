@@ -18,7 +18,7 @@ public class TemperatureAggregator {
     record TemperatureMeasurement(String location, double temperature) {
     }
 
-    @Incoming("temps")
+    @Incoming("temperatures")
     @Outgoing("temperature-aggregate")
     public Multi<Tuple2<String, Double>> aggregate(Multi<TemperatureMeasurement> temperatures) {
         // LIVE CODE THIS
