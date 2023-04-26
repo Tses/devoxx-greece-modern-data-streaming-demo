@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Athens Pub!</title>
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Pacifico"/>
+
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            font-family: 'Red Hat Text', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: blue;
+            background-image: linear-gradient(131.83deg, #FFFAFA 0%, #FFF7F7 99.21%);
+        }
+
+        h1 {
+            font-family: Pacifico, fantasy;
+            font-size: 60px;
+            font-style: normal;
+            font-variant: normal;
+            font-weight: 700;
+            line-height: 26.4px;
+        }
+
+        .title {
+            text-align: center;
+            padding: 1em;
+            background: linear-gradient(to right, #30CFD0 0%, #330867 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .message {
+            text-align: center;
+            padding: 1em;
+            font-size: large;
+        }
+
+        main {
+            display: flex;
+            flex-flow: column wrap;
+            padding-top: 5px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .error {
+            color: indianred;
+            font-size: large;
+        }
+
+        #buy {
+            display: block;
+            background-image: linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%);
+            border-radius: 8px;
+            border-style: none;
+            box-sizing: border-box;
+            color: #FFFFFF;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-family: "Inter UI","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Open Sans","Helvetica Neue",sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            height: 4rem;
+            padding: 0 1.6rem;
+            text-align: center;
+            text-shadow: rgba(0, 0, 0, 0.25) 0 3px 8px;
+            transition: all .5s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        #buy:hover {
+            box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
+            transition-duration: .1s;
+        }
+
+
+        #buy:active {
+            box-shadow: rgba(0, 0, 0, .1) 0 3px 6px 0, rgba(0, 0, 0, .1) 0 0 10px 0, rgba(0, 0, 0, .1) 0 1px 4px -1px;
+            transform: translateY(2px);
+            transition-duration: .35s;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<header>
+    <h1 class="title">The Athens Pub!</h1>
+</header>
+
+<main>
+
+    <p class="response message"></p>
+    <button id="buy">Beer on tap (<span id="price"></span>)</button>
+
+</main>
+
+<script>
+    const formatter = new Intl.NumberFormat('fr-FR', {
+        style: 'currency',
+        currency: 'EUR',
+    });
+
+    window.onload = () => {
+        let button = document.querySelector("#buy");
+        console.log("button is", button);
+
+        const source = new EventSource("/stream");
+        source.onmessage = ev => {
+            const  j = JSON.parse(ev.data);
+            document.getElementById("price").innerHTML = formatter.format(j);
+        }
+
+        fetch("/price")
+            .then(response => response.json())
+            .then(json => {
+                document.getElementById("price").innerHTML = formatter.format(json);
+            })
+        button.onclick = function () {
+            console.log("click");
+
+            fetch('/order', {
+                method: 'POST'
+            })
+                .then(response => {
+                    console.log(JSON.stringify(response), "Response status", response.status);
+                    if (response.status === 200 || response.status === 204) {
+                        document.querySelector(".response").innerHTML = '<p class="success">Beer ordered! Cheers!</p>'
+                    } else {
+                        document.querySelector(".response").innerHTML = '<p class="error">No beer for you (' + response.status + ')</p>'
+                    }
+                })
+        }
+    }
+</script>
+
+</body>
+</html>

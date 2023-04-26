@@ -1,0 +1,24 @@
+---
+version: '3.7'
+
+services:
+  hive:
+    image: hivemq/hivemq4
+    ports:
+      - target: 8080
+        published: 8088
+        protocol: tcp
+        mode: host
+      - target: 1883
+        published: 1883
+        protocol: tcp
+        mode: host
+  kafka:
+    image: quay.io/ogunalp/kafka-native:latest
+    ports:
+      - target: 9092
+        published: 9092
+        protocol: tcp
+        mode: host
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
