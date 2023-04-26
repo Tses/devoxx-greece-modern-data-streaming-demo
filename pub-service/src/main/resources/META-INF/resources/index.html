@@ -7,6 +7,8 @@
     <title>Athens Pub!</title>
 
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Pacifico"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <style>
         body {
@@ -102,7 +104,6 @@
 
 <main>
 
-    <p class="response message"></p>
     <button id="buy">Beer on tap (<span id="price"></span>)</button>
 
 </main>
@@ -120,7 +121,26 @@
         const source = new EventSource("/stream");
         source.onmessage = ev => {
             const  j = JSON.parse(ev.data);
-            document.getElementById("price").innerHTML = formatter.format(j);
+            const val = document.getElementById("price").innerHTML;
+            const newValue = formatter.format(j);
+            if (val !== newValue) {
+                document.getElementById("price").innerHTML = newValue;
+                Toastify({
+                    text: "New price: " + newValue,
+                    duration: 3000,
+                    newWindow: true,
+                    gravity: "bottom", // `top` or `bottom`
+                    position: "center", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background: "linear-gradient(to right, rgb(255, 95, 109), rgb(255, 195, 113))",
+                        color: "white",
+                        "font-size": "large"
+                    },
+                }).showToast();
+            }
+
+
         }
 
         fetch("/price")
@@ -137,11 +157,35 @@
                 .then(response => {
                     console.log(JSON.stringify(response), "Response status", response.status);
                     if (response.status === 200 || response.status === 204) {
-                        document.querySelector(".response").innerHTML = '<p class="success">Beer ordered! Cheers!</p>'
+                        Toastify({
+                            text: "Beer ordered! Cheers!",
+                            duration: 3000,
+                            newWindow: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "center", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background: "linear-gradient(to right, rgb(0, 176, 155), rgb(150, 201, 61));",
+                                color: "white",
+                                "font-size": "large"
+                            },
+                        }).showToast();
                     } else {
-                        document.querySelector(".response").innerHTML = '<p class="error">No beer for you (' + response.status + ')</p>'
+                        Toastify({
+                            text: "Unable to order the beer",
+                            duration: 3000,
+                            newWindow: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "center", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background: "linear-gradient(to right, rgb(255, 95, 109), rgb(255, 195, 113))",
+                                color: "white",
+                                "font-size": "large"
+                            },
+                        }).showToast();
                     }
-                })
+                });
         }
     }
 </script>
