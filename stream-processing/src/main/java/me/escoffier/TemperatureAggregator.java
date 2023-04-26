@@ -29,14 +29,8 @@ public class TemperatureAggregator {
                         .map(l -> Tuple2.of(grouped.key(), l))) // Time window
                 .flatMap(rec -> {
                     // Compute the average
-                    var avg = rec.getItem2().stream().mapToDouble(r -> r.temperature).average().orElse(0.0);
-                    if (avg == 0.0) {
-                        // Skip
-                        return Multi.createFrom().empty();
-                    } else {
-                        String location = rec.getItem1();
-                        return Multi.createFrom().item(Tuple2.of(location, avg));
-                    }
+                    return Multi.createFrom().item(rec.mapItem2(l -> l.stream().mapToDouble(r -> r.temperature).average().orElse(0.0)))
+                            .filter(t -> t.getItem2() != 0.0);
                 });
     }
 }

@@ -1,8 +1,8 @@
 package me.escoffier;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.tuples.Tuple2;
 import io.smallrye.reactive.messaging.kafka.Record;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
@@ -11,6 +11,7 @@ import java.time.Duration;
 /**
  * Compute the number of order / location / 10s.
  */
+@ApplicationScoped
 public class OrderAggregator {
 
     @Incoming("orders")
