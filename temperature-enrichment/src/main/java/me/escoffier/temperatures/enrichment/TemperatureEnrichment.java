@@ -18,6 +18,7 @@ public class TemperatureEnrichment {
     @Incoming("temperatures")
     @Outgoing("temps")
     public Record<String, TemperatureMeasurement> fromMqttToKafka(byte[] temperature) {
+        // LIVE CODE THIS
         JsonObject input = Buffer.buffer(temperature).toJsonObject();
         var location = repository.getLocationForDevice(input.getString("device"));
         TemperatureMeasurement outcome = new TemperatureMeasurement(location, input.getDouble("value"));

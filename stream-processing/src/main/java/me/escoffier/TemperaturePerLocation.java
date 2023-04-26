@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class TemperaturePerLocation
 {
+    // FIXME: Ozan - delete this
 
     @Channel("temperature-aggregate")
     Table<String, Tuple2<String, Double>> temperatures;

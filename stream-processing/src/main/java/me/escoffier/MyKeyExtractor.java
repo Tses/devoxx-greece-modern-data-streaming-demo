@@ -9,6 +9,8 @@ import java.lang.reflect.Type;
 
 @ApplicationScoped
 public class MyKeyExtractor implements MessageKeyExtractor {
+
+    // FIXME: Ozan - deconstruction of value
     @Override
     public boolean canExtract(Message<?> in, Type target) {
         return in.getPayload() instanceof Tuple2;

@@ -1,6 +1,5 @@
 package me.escoffier.temperatures;
 
-import io.smallrye.mutiny.subscription.UniEmitter;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import io.vertx.core.json.JsonObject;
 import org.jboss.logging.Logger;
@@ -13,7 +12,7 @@ public class TemperatureSensor implements Runnable {
 
     private final String id;
     private final double current;
-    private final Duration frequence;
+    private final Duration frequency;
     private final Random random;
     private final MutinyEmitter<JsonObject> emitter;
     private volatile boolean done;
@@ -23,7 +22,7 @@ public class TemperatureSensor implements Runnable {
     public TemperatureSensor(String id, double base, Duration frequency, MutinyEmitter<JsonObject> emitter) {
         this.id = id;
         this.current = base;
-        this.frequence = frequency;
+        this.frequency = frequency;
         this.random = new Random();
         this.emitter = emitter;
     }
@@ -46,7 +45,7 @@ public class TemperatureSensor implements Runnable {
             LOGGER.infof("Sensor %s sending %s", id, value);
             emitter.sendAndAwait(value);
             try {
-                Thread.sleep(frequence);
+                Thread.sleep(frequency);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

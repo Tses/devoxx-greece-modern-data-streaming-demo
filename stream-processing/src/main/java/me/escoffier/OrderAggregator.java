@@ -9,7 +9,7 @@ import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import java.time.Duration;
 
 /**
- * Compute the number of order / location / minute.
+ * Compute the number of order / location / 10s.
  */
 public class OrderAggregator {
 
@@ -23,7 +23,6 @@ public class OrderAggregator {
                         .group().intoLists().every(Duration.ofSeconds(10))
                         .log("list")
                         .map(list -> Record.of(streamPerLocation.key(), list.size()))
-                        .ifNoItem().after(Duration.ofSeconds(10)).recoverWithMulti(Multi.createFrom().item(Record.of(streamPerLocation.key(), 0)))
                 )
                 .log("order-aggregate");
     }

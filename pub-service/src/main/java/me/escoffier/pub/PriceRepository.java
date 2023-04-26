@@ -16,12 +16,15 @@ public class PriceRepository {
     String location;
 
 
+
     private double price = 5.00;
     private final UnicastProcessor<Double> processor = UnicastProcessor.create();
 
     private final Multi<Double> stream = Multi.createBy()
             .replaying().upTo(1).ofMulti(processor)
             .broadcast().toAllSubscribers();
+
+    // FIXME: Ozan - simplify this with a table
 
     @Incoming("prices")
     public void updatePrice(Record<String, Double> price) {

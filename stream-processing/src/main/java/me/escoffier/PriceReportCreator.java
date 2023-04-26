@@ -27,6 +27,7 @@ public class PriceReportCreator {
     @Incoming("order-aggregate")
     @Outgoing("reports")
     public Report emitReport(Record<String, Integer> orderCountPerLocationPerTimePeriod) {
+        // LIVE CODE THIS
         System.out.println("Computing report from " + orderCountPerLocationPerTimePeriod);
         var location = orderCountPerLocationPerTimePeriod.key();
         var count = orderCountPerLocationPerTimePeriod.value();
