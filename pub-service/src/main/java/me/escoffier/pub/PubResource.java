@@ -1,5 +1,7 @@
 package me.escoffier.pub;
 
+import io.quarkus.qute.Template;
+import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.reactive.messaging.MutinyEmitter;
 import io.smallrye.reactive.messaging.kafka.Record;
@@ -7,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -23,6 +26,9 @@ public class PubResource {
 
     @Inject
     PriceRepository repository;
+
+    @Inject
+    Template index;
 
     @POST
     @Path("/order")
@@ -42,5 +48,12 @@ public class PubResource {
     @RestStreamElementType(MediaType.APPLICATION_JSON)
     public Multi<Double> getStream() {
         return repository.getPriceStream();
+    }
+
+
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance getPostsHtml() {
+        return index.data("location", location);
     }
 }
