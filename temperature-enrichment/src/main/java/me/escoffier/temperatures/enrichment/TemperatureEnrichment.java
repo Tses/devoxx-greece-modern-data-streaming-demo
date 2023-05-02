@@ -2,7 +2,6 @@ package me.escoffier.temperatures.enrichment;
 
 
 import io.smallrye.reactive.messaging.kafka.Record;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -17,11 +16,10 @@ public class TemperatureEnrichment {
 
     @Incoming("temperatures")
     @Outgoing("temps")
-    public Record<String, TemperatureMeasurement> fromMqttToKafka(byte[] temperature) {
+    public Record<String, TemperatureMeasurement> fromMqttToKafka(JsonObject rawMeasurement) {
         // LIVE CODE THIS
-        JsonObject input = Buffer.buffer(temperature).toJsonObject();
-        var location = repository.getLocationForDevice(input.getString("device"));
-        TemperatureMeasurement outcome = new TemperatureMeasurement(location, input.getDouble("value"));
+        var location = repository.getLocationForDevice(rawMeasurement.getString("device"));
+        TemperatureMeasurement outcome = new TemperatureMeasurement(location, rawMeasurement.getDouble("value"));
         System.out.println("Writing " + outcome);
         return Record.of(location, outcome);
     }
