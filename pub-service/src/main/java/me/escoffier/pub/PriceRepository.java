@@ -1,46 +1,32 @@
 package me.escoffier.pub;
 
-import io.quarkus.runtime.Startup;
-import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
-import io.smallrye.mutiny.operators.multi.processors.UnicastProcessor;
-import io.smallrye.reactive.messaging.annotations.Broadcast;
-import io.smallrye.reactive.messaging.kafka.Record;
-import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Optional;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+
+import io.smallrye.mutiny.Multi;
+import io.smallrye.reactive.messaging.Table;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class PriceRepository {
+
+    @Channel("prices")
+    Table<String, Double> prices;
+    
     @ConfigProperty(name = "location")
     String location;
 
-
-
     private double price = 5.00;
-    private final UnicastProcessor<Double> processor = UnicastProcessor.create();
-
-    private final Multi<Double> stream = Multi.createBy()
-            .replaying().upTo(1).ofMulti(processor)
-            .broadcast().toAllSubscribers();
-
-    // FIXME: Ozan - simplify this with a table
-
-    @Incoming("prices")
-    public void updatePrice(Record<String, Double> price) {
-        if (price.key().equalsIgnoreCase(location)) {
-            this.price = price.value();
-            this.processor.onNext(this.price);
-        }
-
-    }
 
     public double getCurrentPrice() {
-        return price;
+        return Optional.ofNullable(prices.get(location))
+            .orElse(price);
     }
 
     public Multi<Double> getPriceStream() {
-        processor.onNext(getCurrentPrice());
-        return stream;
+        return prices.filterKey(k -> location.equalsIgnoreCase(k))
+            .map(t -> t.getItem2());
     }
 }
