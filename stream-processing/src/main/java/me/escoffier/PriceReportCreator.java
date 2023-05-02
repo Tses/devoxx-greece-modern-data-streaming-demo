@@ -1,7 +1,6 @@
 package me.escoffier;
 
 import io.smallrye.reactive.messaging.Table;
-import io.smallrye.reactive.messaging.kafka.Record;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -23,11 +22,11 @@ public class PriceReportCreator {
 
     @Incoming("order-aggregate")
     @Outgoing("reports")
-    public Report emitReport(Record<String, Integer> orderCountPerLocationPerTimePeriod) {
+    public Report emitReport(Orders orderCountPerLocationPerTimePeriod) {
         // LIVE CODE THIS
         System.out.println("Computing report from " + orderCountPerLocationPerTimePeriod);
-        var location = orderCountPerLocationPerTimePeriod.key();
-        var count = orderCountPerLocationPerTimePeriod.value();
+        var location = orderCountPerLocationPerTimePeriod.location();
+        var count = orderCountPerLocationPerTimePeriod.numberOfOrders();
         var temperature = temperatures.get(location);
         if (temperature != null) {
             return new Report(location, temperature, count);

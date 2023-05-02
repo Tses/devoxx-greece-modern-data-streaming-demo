@@ -16,15 +16,12 @@ public class OrderAggregator {
 
     @Incoming("orders")
     @Outgoing("order-aggregate")
-    public Multi<Record<String, Integer>> aggregate(Multi<Record<String, Double>> orders) {
+    public Multi<Orders> aggregate(Multi<Record<String, Double>> orders) {
         return orders
-                .log("orders")
                 .group().by(Record::key) // Group by location
                 .flatMap(streamPerLocation -> streamPerLocation
-                        .group().intoLists().every(Duration.ofSeconds(10))
-                        .log("list")
-                        .map(list -> Record.of(streamPerLocation.key(), list.size()))
-                )
-                .log("order-aggregate");
+                        .group().intoLists().every(Duration.ofSeconds(10), true)
+                        .map(list -> new Orders(streamPerLocation.key(), list.size()))
+                );
     }
 }

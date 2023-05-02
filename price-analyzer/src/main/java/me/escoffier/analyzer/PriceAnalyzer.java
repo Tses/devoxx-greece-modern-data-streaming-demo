@@ -12,6 +12,7 @@ import java.util.Map;
 public class PriceAnalyzer {
 
     private static final double BASE_PRICE = 5.00;
+    private static final double MAX_PRICE = 15.00;
     private final Map<String, Double> prices = new HashMap<>();
 
     record Report(String location, double temperature, int numberOfOrder) {
@@ -24,25 +25,30 @@ public class PriceAnalyzer {
     public Record<String, Double> analyze(Report report) {
         System.out.println("analyzing... " + report);
         var current = prices.getOrDefault(report.location, BASE_PRICE);
+        double newPrice;
         if (report.temperature >= 22) {
             if (report.numberOfOrder > 5) {
-                // Big increase
-                prices.put(report.location, current + 1);
-                return Record.of(report.location , current + 1);
+                newPrice = increase(current, 1);
             } else {
-                // Small increase
-                prices.put(report.location, current + 0.5);
-                return Record.of(report.location, current + 0.5);
+                newPrice = increase(current, 0.5);
             }
         } else {
             if (report.numberOfOrder > 5) {
-                prices.put(report.location, current + 0.5);
-                return Record.of(report.location, current + 0.5);
+                // No change.
+                return Record.of(report.location, current);
             } else {
-                var newPrice = Math.min(BASE_PRICE, current - 0.5);
-                prices.put(report.location, newPrice);
-                return Record.of(report.location, newPrice);
+                newPrice = decrease(current, -0.5);
             }
         }
+        prices.put(report.location, newPrice);
+        return Record.of(report.location, newPrice);
+    }
+
+    private double increase(double current, double incr) {
+        return Math.min(MAX_PRICE, current + incr);
+    }
+
+    private double decrease(double current, double incr) {
+        return Math.max(BASE_PRICE, current - incr);
     }
 }

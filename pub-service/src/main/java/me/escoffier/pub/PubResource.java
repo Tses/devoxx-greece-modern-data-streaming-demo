@@ -21,11 +21,11 @@ public class PubResource {
     @ConfigProperty(name = "location")
     String location;
 
-    @Channel("orders")
-    MutinyEmitter<Record<String, Double>> emitter;
 
     @Inject
     PriceRepository repository;
+    @Channel("orders")
+    MutinyEmitter<Record<String, Double>> emitter;
 
     @Inject
     Template index;
