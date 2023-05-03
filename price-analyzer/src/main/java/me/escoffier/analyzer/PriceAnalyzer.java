@@ -37,7 +37,7 @@ public class PriceAnalyzer {
                 // No change.
                 return Record.of(report.location, current);
             } else {
-                newPrice = decrease(current, -0.5);
+                newPrice = decrease(current, -1);
             }
         }
         prices.put(report.location, newPrice);

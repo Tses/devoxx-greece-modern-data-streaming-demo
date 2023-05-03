@@ -21,7 +21,6 @@ public class PubResource {
     @ConfigProperty(name = "location")
     String location;
 
-
     @Inject
     PriceRepository repository;
     @Channel("orders")

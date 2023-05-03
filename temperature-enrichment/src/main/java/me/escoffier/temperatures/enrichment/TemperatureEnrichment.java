@@ -18,16 +18,13 @@ public class TemperatureEnrichment {
 
     @Incoming("raw-temperatures")
     @Outgoing("temperatures")
-    public Record<String, TemperatureMeasurement> fromMqttToKafka(RawTemperature raw) {
-        // LIVE CODE THIS
-        var location = repository.getLocationForDevice(raw.device);
-        TemperatureMeasurement outcome = new TemperatureMeasurement(location, raw.value);
+    public Record<String, TemperatureMeasurement> fromMqttToKafka(JsonObject raw) {
+        var location = repository
+                .getLocationForDevice(raw.getString("device"));
+        TemperatureMeasurement outcome = new TemperatureMeasurement(location,
+                raw.getDouble("value"));
         System.out.println("Writing " + outcome);
         return Record.of(location, outcome);
-    }
-
-    record RawTemperature(String device, double value) {
-
     }
 
     record TemperatureMeasurement(String location, double temperature) {

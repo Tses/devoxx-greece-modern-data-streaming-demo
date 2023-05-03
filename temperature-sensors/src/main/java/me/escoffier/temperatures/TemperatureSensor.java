@@ -19,7 +19,8 @@ public class TemperatureSensor implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger("sensor");
 
-    public TemperatureSensor(String id, double base, Duration frequency, MutinyEmitter<JsonObject> emitter) {
+    public TemperatureSensor(String id, double base, Duration frequency,
+                             MutinyEmitter<JsonObject> emitter) {
         this.id = id;
         this.current = base;
         this.frequency = frequency;
@@ -40,7 +41,8 @@ public class TemperatureSensor implements Runnable {
     public void run() {
         while (!done) {
             var value = JsonObject.of(
-                    "device", id, "value", current + (random.nextBoolean() ? -1 : 1) * random.nextInt(3)
+                    "device", id,
+                    "value", current + (random.nextBoolean() ? -1 : 1) * random.nextInt(3)
             );
             LOGGER.infof("Sensor %s sending %s", id, value);
             emitter.sendAndAwait(value);

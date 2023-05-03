@@ -23,15 +23,17 @@ public class PriceReportCreator {
     @Incoming("order-aggregate")
     @Outgoing("reports")
     public Report emitReport(Orders orderCountPerLocationPerTimePeriod) {
-        // LIVE CODE THIS
-        System.out.println("Computing report from " + orderCountPerLocationPerTimePeriod);
+        System.out.println("Computing report from "
+                + orderCountPerLocationPerTimePeriod);
         var location = orderCountPerLocationPerTimePeriod.location();
         var count = orderCountPerLocationPerTimePeriod.numberOfOrders();
         var temperature = temperatures.get(location);
+
         if (temperature != null) {
             return new Report(location, temperature, count);
         } else {
-            System.out.println("no report - no temperature for " + location + " in " + temperatures.toMap());
+            System.out.println("no report - no temperature for "
+                    + location + " in " + temperatures.toMap());
             return null;
         }
     }

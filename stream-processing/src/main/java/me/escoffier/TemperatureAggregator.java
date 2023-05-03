@@ -20,8 +20,8 @@ public class TemperatureAggregator {
 
     @Incoming("temperatures")
     @Outgoing("temperature-aggregate")
-    public Multi<Tuple2<String, Double>> aggregate(Multi<TemperatureMeasurement> temperatures) {
-        // LIVE CODE THIS
+    public Multi<Tuple2<String, Double>> aggregate(
+            Multi<TemperatureMeasurement> temperatures) {
         return temperatures
                 .group().by(t -> t.location) // Group by key
                 .flatMap(grouped -> grouped
@@ -29,7 +29,9 @@ public class TemperatureAggregator {
                         .map(l -> Tuple2.of(grouped.key(), l))) // Time window
                 .flatMap(rec -> {
                     // Compute the average
-                    return Multi.createFrom().item(rec.mapItem2(l -> l.stream().mapToDouble(r -> r.temperature).average().orElse(0.0)))
+                    return Multi.createFrom().item(rec.mapItem2(l ->
+                                    l.stream().mapToDouble(r -> r.temperature)
+                                            .average().orElse(0.0)))
                             .filter(t -> t.getItem2() != 0.0);
                 });
     }
